@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
 import { uuid } from 'uuidv4'
-
-export default class Book extends BaseModel {
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
+export default class Book extends compose(BaseModel, SoftDeletes) {
   public static selfAssignPrimaryKey = true
   @column({ isPrimary: true, prepare: (value: string) => (value ? value : uuid()) })
   public id: string
@@ -16,6 +17,8 @@ export default class Book extends BaseModel {
   public title_arr: string
   @column()
   public author_id: string
+  @column.dateTime({ serializeAs: null })
+  public deletedAt: DateTime
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
