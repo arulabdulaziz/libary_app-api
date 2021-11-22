@@ -6,10 +6,12 @@ export default class Users extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string("name")
+      table.string('name')
+      table.string('email')
       table.string('password')
       table.enum('role', ['admin', 'user']).defaultTo('user')
-
+      table.string('remember_me_token').nullable()
+      table.timestamp('deleted_at', { useTz: true })
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -23,4 +23,12 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async () => {
   return { hello: 'world' }
 });
-Route.resource("book", "BooksController").apiOnly()
+Route.get("book", "BooksController.index")
+Route.get('book/:id', 'BooksController.show')
+Route.post("user/login", "UsersController.login")
+Route.group(() => {
+  Route.group(() => {
+    Route.resource("book", "BooksController").apiOnly().except(["index", "show"])
+    Route.resource('user', 'UsersController').apiOnly()
+  }).middleware('checkIsAdmin')
+}).middleware('auth:api')

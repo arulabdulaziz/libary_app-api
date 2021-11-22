@@ -29,7 +29,10 @@
       "@adonisjs/core",
       "@adonisjs/repl",
       "@adonisjs/lucid",
-      "adonis-lucid-soft-deletes"
+      "adonis-lucid-soft-deletes",
+      "@adonisjs/auth",
+      "@adonisjs/redis",
+      "@adonisjs/bouncer"
     ],
     "experimentalDecorators": true,
     "allowJs": true
