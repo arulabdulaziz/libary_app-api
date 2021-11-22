@@ -25,10 +25,13 @@ Route.get('/', async () => {
 });
 Route.get("book", "BooksController.index")
 Route.get('book/:id', 'BooksController.show')
+Route.get('author', 'AuthorsController.index')
+Route.get('author/:id', 'AuthorsController.show')
 Route.post("user/login", "UsersController.login")
 Route.group(() => {
   Route.group(() => {
     Route.resource("book", "BooksController").apiOnly().except(["index", "show"])
     Route.resource('user', 'UsersController').apiOnly()
+    Route.resource('author', 'AuthorsController').apiOnly().except(['index', 'show'])
   }).middleware('checkIsAdmin')
 }).middleware('auth:api')

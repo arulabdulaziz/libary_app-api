@@ -8,6 +8,7 @@ export default class Authors extends BaseSchema {
       table.uuid('id').primary()
       table.string('name')
       table.string('name_arr').nullable()
+      table.timestamp('deleted_at', { useTz: true })
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
