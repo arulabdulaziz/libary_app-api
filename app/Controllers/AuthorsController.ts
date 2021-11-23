@@ -1,8 +1,9 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import Database from '@ioc:Adonis/Lucid/Database'
+// import Database from '@ioc:Adonis/Lucid/Database'
 import Response from 'App/Helpers/Response'
 import Author from 'App/Models/Author'
+
 export default class AuthorsController {
   static responseAlreadyExistAuthor() {
     return Response.errorResponseSimple(false, [{ message: 'Author Already Exist' }])
@@ -14,7 +15,8 @@ export default class AuthorsController {
     const userReq = request.qs()
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
-    const authors = await Database.from('authors').whereNull('deleted_at').paginate(page, limit)
+    // const authors = await Database.from('authors').whereNull('deleted_at').paginate(page, limit)
+    const authors = await Author.query().preload('books').paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, authors))
   }
 
@@ -45,6 +47,7 @@ export default class AuthorsController {
     if (!author) {
       return response.status(404).json(AuthorsController.responseAuthorNotFound())
     }
+    await author.load('books')
     return response.status(200).json(Response.successResponseSimple(true, author))
   }
 

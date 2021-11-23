@@ -8,7 +8,7 @@ export default class Books extends BaseSchema {
       table.uuid('id').primary()
       table.string('title')
       table.string('title_arr').nullable()
-      table.string('author_id')
+      table.uuid('author_id')
       table.timestamp('deleted_at', { useTz: true })
 
       /**
