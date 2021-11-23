@@ -16,10 +16,14 @@ export default class BooksController {
     const userReq = request.qs()
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
+    const search_item = userReq.search_item ? userReq.search_item : ''
     // const books = await Database.from('books')
     //   .whereNull('deleted_at')
     //   .paginate(page, limit)
-    const books = await Book.query().preload('author').paginate(page, limit)
+    const books = await Book.query()
+      .where('title', 'like', `%${search_item}%`)
+      .preload('author')
+      .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, books))
   }
 
@@ -90,7 +94,8 @@ export default class BooksController {
     })
     const { title, title_arr, author_id } = request.body()
     const isExistBook = await Book.query().where('title', title).first()
-    if (isExistBook && isExistBook.id != id) return response.status(400).json(BooksController.responseAlreadyExistTitle())
+    if (isExistBook && isExistBook.id != id)
+      return response.status(400).json(BooksController.responseAlreadyExistTitle())
     const author = await Author.find(author_id)
     if (!author) return response.status(400).json(AuthorsController.responseAuthorNotFound())
     await book

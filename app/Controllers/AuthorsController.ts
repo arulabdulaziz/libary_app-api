@@ -15,8 +15,12 @@ export default class AuthorsController {
     const userReq = request.qs()
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
+    const search_item = userReq.search_item ? userReq.search_item : ''
     // const authors = await Database.from('authors').whereNull('deleted_at').paginate(page, limit)
-    const authors = await Author.query().preload('books').paginate(page, limit)
+    const authors = await Author.query()
+      .where('name', 'like', `%${search_item}%`)
+      .preload('books')
+      .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, authors))
   }
 
@@ -38,7 +42,7 @@ export default class AuthorsController {
       return response.status(400).json(AuthorsController.responseAlreadyExistAuthor())
     }
     const newAuthor = await Author.create({ name, name_arr })
-    response.status(201).json(Response.successResponseSimple(true, newAuthor))
+    return response.status(201).json(Response.successResponseSimple(true, newAuthor))
   }
 
   public async show({ request, response }: HttpContextContract) {

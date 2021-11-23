@@ -17,9 +17,10 @@ export default class Author extends compose(BaseModel, SoftDeletes) {
   public name: string
   @column()
   public name_arr: string
+  @column.dateTime({ serializeAs: null })
+  public deleted_at: DateTime
   @column.dateTime({ autoCreate: true })
   public created_at: DateTime
-
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updated_at: DateTime
 
