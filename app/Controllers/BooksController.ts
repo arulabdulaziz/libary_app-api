@@ -5,6 +5,12 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 // import Database from '@ioc:Adonis/Lucid/Database'
 import AuthorsController from 'App/Controllers/AuthorsController'
 import Author from 'App/Models/Author'
+import Category from 'App/Models/Category'
+import BookCategory from 'App/Models/BookCategory'
+/**
+ * https://docs.adonisjs.com/guides/models/relationships#attach
+ * https://docs.adonisjs.com/reference/orm/base-model#static-firstornew
+ */
 export default class BooksController {
   static responseBookNotFound() {
     return Response.errorResponseSimple(false, [{ message: 'Book Not Found' }])
@@ -23,6 +29,7 @@ export default class BooksController {
     const books = await Book.query()
       .where('title', 'like', `%${search_item}%`)
       .preload('author')
+      .preload('categories')
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, books))
   }
@@ -46,15 +53,30 @@ export default class BooksController {
         'categories.*.string': 'The categories must be an array of string',
       },
     })
-    const { title, title_arr, author_id } = request.body()
+    const { title, title_arr, author_id, categories } = request.body()
     const author = await Author.find(author_id)
+    const categoriesReq = Array()
     if (!author) return response.status(400).json(AuthorsController.responseAuthorNotFound())
     const newBook = await Book.create({
       title,
       title_arr,
       author_id,
     })
-    response.status(201).json(Response.successResponseSimple(true, newBook))
+    await newBook.related('categories').detach()
+    for await (const e of categories) {
+      const category = await Category.firstOrNew({ name: e }, { name: e })
+      if (category.$isPersisted) {
+      } else {
+        category.save()
+      }
+      console.log(category, '<<< category')
+      categoriesReq.push(category.id)
+    }
+    await BookCategory.createMany(
+      categoriesReq.map((e) => ({ book_id: newBook.id, category_id: e }))
+    )
+    await newBook.load('categories')
+    return response.status(201).json(Response.successResponseSimple(true, newBook))
   }
 
   public async show({ request, response }: HttpContextContract) {
@@ -66,6 +88,7 @@ export default class BooksController {
         .json(Response.errorResponseSimple(false, BooksController.responseBookNotFound()))
     }
     await book.load('author')
+    await book.load('categories')
     return response.status(200).json(Response.successResponseSimple(true, book))
   }
 
@@ -92,7 +115,7 @@ export default class BooksController {
         'categories.*.string': 'The categories must be an array of string',
       },
     })
-    const { title, title_arr, author_id } = request.body()
+    const { title, title_arr, author_id, categories } = request.body()
     const isExistBook = await Book.query().where('title', title).first()
     if (isExistBook && isExistBook.id != id)
       return response.status(400).json(BooksController.responseAlreadyExistTitle())
@@ -105,6 +128,19 @@ export default class BooksController {
         author_id,
       })
       .save()
+    const categoriesReq = Array()
+    await book.related('categories').detach()
+    for await (const e of categories) {
+      const category = await Category.firstOrNew({ name: e }, { name: e })
+      if (category.$isPersisted) {
+      } else {
+        category.save()
+      }
+      console.log(category, '<<< category')
+      categoriesReq.push(category.id)
+    }
+    await BookCategory.createMany(categoriesReq.map((e) => ({ book_id: book.id, category_id: e })))
+    await book.load('categories')
     return response.status(200).json(Response.successResponseSimple(true, book))
   }
 

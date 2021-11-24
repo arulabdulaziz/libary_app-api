@@ -16,6 +16,7 @@ export default class CategoriesController {
     const search_item = userReq.search_item ? userReq.search_item : ''
     const categories = await Category.query()
       .where('name', 'like', `%${search_item}%`)
+      .preload("books")
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, categories))
   }
@@ -44,6 +45,7 @@ export default class CategoriesController {
     const id = request.param('id')
     const category = await Category.find(id)
     if (!category) return response.status(404).json(CategoriesController.responseCategoryNotFound())
+    await category.load("books")
     return response.status(200).json(Response.successResponseSimple(true, category))
   }
 
