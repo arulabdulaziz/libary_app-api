@@ -22,19 +22,25 @@ import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', async () => {
   return { hello: 'world' }
-});
-Route.get("book", "BooksController.index")
+})
+Route.get('book', 'BooksController.index')
 Route.get('book/:id', 'BooksController.show')
 Route.get('author', 'AuthorsController.index')
 Route.get('author/:id', 'AuthorsController.show')
+Route.get('publisher', 'PublishersController.index')
+Route.get('publisher/:id', 'PublishersController.show')
+Route.get('volume', 'VolumesController.index')
+Route.get('volume/:id', 'VolumesController.show')
 Route.get('category', 'CategoriesController.index')
 Route.get('category/:id', 'CategoriesController.show')
-Route.post("user/login", "UsersController.login")
+Route.post('user/login', 'UsersController.login')
 Route.group(() => {
   Route.group(() => {
-    Route.resource("book", "BooksController").apiOnly().except(["index", "show"])
+    Route.resource('book', 'BooksController').apiOnly().except(['index', 'show'])
     Route.resource('user', 'UsersController').apiOnly()
     Route.resource('author', 'AuthorsController').apiOnly().except(['index', 'show'])
     Route.resource('category', 'CategoriesController').apiOnly().except(['index', 'show'])
+    Route.resource('publisher', 'PublishersController').apiOnly().except(['index', 'show'])
+    Route.resource('volume', 'VolumesController').apiOnly().except(['index', 'show'])
   }).middleware('checkIsAdmin')
 }).middleware('auth:api')

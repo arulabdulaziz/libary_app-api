@@ -1,18 +1,13 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class Books extends BaseSchema {
-  protected tableName = 'books'
+export default class Publishers extends BaseSchema {
+  protected tableName = 'publishers'
 
-  public async up() {
+  public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('title')
-      table.string('title_arr').nullable()
-      table.uuid('author_id')
-      table.uuid('publisher_id')
-      table.uuid('volume_id')
+      table.string('name')
       table.timestamp('deleted_at', { useTz: true })
-
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
@@ -21,7 +16,7 @@ export default class Books extends BaseSchema {
     })
   }
 
-  public async down() {
+  public async down () {
     this.schema.dropTable(this.tableName)
   }
 }
