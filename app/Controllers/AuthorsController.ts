@@ -17,9 +17,12 @@ export default class AuthorsController {
     const limit = userReq.limit ? userReq.limit : 20
     const search_item = userReq.search_item ? userReq.search_item : ''
     // const authors = await Database.from('authors').whereNull('deleted_at').paginate(page, limit)
+    // const authors = await Author.query()
+    //   .where('name', 'like', `%${search_item}%`)
+    //   .preload('books')
+    //   .paginate(page, limit)
     const authors = await Author.query()
       .where('name', 'like', `%${search_item}%`)
-      .preload('books')
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, authors))
   }

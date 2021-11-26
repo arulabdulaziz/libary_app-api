@@ -3,10 +3,11 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 export default class Volumes extends BaseSchema {
   protected tableName = 'volumes'
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
       table.string('name')
+      table.string('cover').nullable()
       table.timestamp('deleted_at', { useTz: true })
 
       /**
@@ -17,7 +18,7 @@ export default class Volumes extends BaseSchema {
     })
   }
 
-  public async down () {
+  public async down() {
     this.schema.dropTable(this.tableName)
   }
 }

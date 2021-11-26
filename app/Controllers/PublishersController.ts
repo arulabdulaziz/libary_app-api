@@ -15,9 +15,12 @@ export default class PublishersController {
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
     const search_item = userReq.search_item ? userReq.search_item : ''
+    // const publishers = await Publisher.query()
+    //   .where('name', 'like', `%${search_item}%`)
+    //   .preload('books')
+    //   .paginate(page, limit)
     const publishers = await Publisher.query()
       .where('name', 'like', `%${search_item}%`)
-      .preload('books')
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, publishers))
   }

@@ -15,6 +15,8 @@ export default class Volume extends compose(BaseModel, SoftDeletes) {
   }
   @column()
   public name: string
+  @column()
+  public cover: string
 
   @column.dateTime({ autoCreate: true })
   public created_at: DateTime

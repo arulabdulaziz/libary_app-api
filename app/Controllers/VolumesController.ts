@@ -14,9 +14,12 @@ export default class VolumesController {
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
     const search_item = userReq.search_item ? userReq.search_item : ''
+    // const volumes = await Volume.query()
+    //   .where('name', 'like', `%${search_item}%`)
+    //   .preload('books')
+    //   .paginate(page, limit)
     const volumes = await Volume.query()
       .where('name', 'like', `%${search_item}%`)
-      .preload('books')
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, volumes))
   }

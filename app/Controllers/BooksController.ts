@@ -25,24 +25,87 @@ export default class BooksController {
   static responseAlreadyExistTitle() {
     return Response.errorResponseSimple(false, [{ message: 'Title already exist' }])
   }
-  public async index({ response, request }: HttpContextContract) {
+  static getParams(request) {
     const userReq = request.qs()
     const page = userReq.page ? userReq.page : 1
     const limit = userReq.limit ? userReq.limit : 20
     const search_item = userReq.search_item ? userReq.search_item : ''
+    const sort_by = !userReq.sort_by && userReq.sort_by != 'title' ? 'title' : userReq.sort_by
+    const sort = !userReq.sort
+      ? 'asc'
+      : userReq.sort != 'asc' && userReq.sort != 'desc'
+      ? 'asc'
+      : userReq.sort
+    return { page, limit, search_item, sort_by, sort }
+  }
+  public async index({ response, request }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
     // const books = await Database.from('books')
     //   .whereNull('deleted_at')
     //   .paginate(page, limit)
+    // const books = await Book.query()
+    //   .where('title', 'like', `%${search_item}%`).orderBy(sort_by, sort)
+    //   .whereHas('categories', (query) => query.where('category_id', '4f0623f3-267a-487a-be38-7bacd9e8f0ed'))
+    //   .preload('author')
+    //   .preload('categories')
+    //   .preload('publisher')
+    //   .preload('volume')
+    //   .paginate(page, limit)
     const books = await Book.query()
       .where('title', 'like', `%${search_item}%`)
-      .preload('author')
-      .preload('categories')
-      .preload('publisher')
-      .preload('volume')
+      .orderBy(sort_by, sort)
       .paginate(page, limit)
     return response.status(200).json(Response.successResponseSimple(true, books))
   }
-
+  public async getByCategory({ request, response }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
+    const category_id = request.qs().category_id ? request.qs().category_id : ''
+    const books = await Book.query()
+      .whereHas('categories', (query) => query.where('category_id', category_id))
+      .where('title', 'like', `%${search_item}%`)
+      .orderBy(sort_by, sort)
+      .paginate(page, limit)
+    return response.status(200).json(Response.successResponseSimple(true, books))
+  }
+  public async getByAuthor({ request, response }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
+    const author_id = request.qs().author_id ? request.qs().author_id : ''
+    const books = await Book.query()
+      .where('author_id', author_id)
+      .where('title', 'like', `%${search_item}%`)
+      .orderBy(sort_by, sort)
+      .paginate(page, limit)
+    return response.status(200).json(Response.successResponseSimple(true, books))
+  }
+  public async getByPublisher({ request, response }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
+    const publisher_id = request.qs().publisher_id ? request.qs().publisher_id : ''
+    const books = await Book.query()
+      .where('publisher_id', publisher_id)
+      .where('title', 'like', `%${search_item}%`)
+      .orderBy(sort_by, sort)
+      .paginate(page, limit)
+    return response.status(200).json(Response.successResponseSimple(true, books))
+  }
+  public async getByVolume({ request, response }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
+    const volume_id = request.qs().volume_id ? request.qs().volume_id : ''
+    const books = await Book.query()
+      .where('volume_id', volume_id)
+      .where('title', 'like', `%${search_item}%`)
+      .orderBy(sort_by, sort)
+      .paginate(page, limit)
+    return response.status(200).json(Response.successResponseSimple(true, books))
+  }
+  public async getByRecomended({ request, response }: HttpContextContract) {
+    const { page, limit, search_item, sort_by, sort } = BooksController.getParams(request)
+    const books = await Book.query()
+      .where('recomended', true)
+      .where('title', 'like', `%${search_item}%`)
+      .orderBy(sort_by, sort)
+      .paginate(page, limit)
+    return response.status(200).json(Response.successResponseSimple(true, books))
+  }
   public async create({}: HttpContextContract) {}
 
   public async store({ request, response }: HttpContextContract) {
@@ -53,6 +116,7 @@ export default class BooksController {
           rules.unique({ table: 'books', column: 'title', where: { deleted_at: null } }),
         ]),
         title_arr: schema.string.optional(),
+        recomended: schema.boolean.optional(),
         categories: schema.array().members(schema.string()),
         author_id: schema.string(),
         publisher_id: schema.string(),
@@ -64,9 +128,12 @@ export default class BooksController {
           'required': 'The {{ field }} is required',
           'title.unique': 'Title already exist',
           'categories.*.string': 'The categories must be an array of string',
+          'string': 'The {{field}} must be {{rule}}',
+          'boolean': 'The {{field}} must be {{rule}} (true or false)',
         },
       })
-      const { title, title_arr, author_id, categories, publisher_id, volume_id } = request.body()
+      const { title, title_arr, author_id, categories, publisher_id, volume_id, recomended } =
+        request.body()
       const author = await Author.find(author_id)
       if (!author) return response.status(400).json(AuthorsController.responseAuthorNotFound())
       const publisher = await Publisher.find(publisher_id)
@@ -77,6 +144,7 @@ export default class BooksController {
       const newBook = await Book.create({
         title,
         title_arr,
+        recomended: recomended ? recomended : false,
         author_id,
         publisher_id,
         volume_id,
@@ -102,7 +170,7 @@ export default class BooksController {
       await Database.commitGlobalTransaction()
       return response.status(201).json(Response.successResponseSimple(true, newBook))
     } catch (error) {
-      console.log(error, "<<< errior")
+      console.log(error, '<<< errior')
       await Database.rollbackGlobalTransaction()
       return response
         .status(error.status ? error.status : 500)
@@ -140,6 +208,7 @@ export default class BooksController {
       const newPostSchema = schema.create({
         title: schema.string({ trim: true }),
         title_arr: schema.string.optional(),
+        recomended: schema.boolean.optional(),
         categories: schema.array().members(schema.string()),
         author_id: schema.string(),
         publisher_id: schema.string(),
@@ -150,9 +219,12 @@ export default class BooksController {
         messages: {
           'required': 'The {{ field }} is required',
           'categories.*.string': 'The categories must be an array of string',
+          'string': 'The {{field}} must be {{rule}}',
+          'boolean': 'The {{field}} must be {{rule}} (true or false)',
         },
       })
-      const { title, title_arr, author_id, categories, publisher_id, volume_id } = request.body()
+      const { title, title_arr, author_id, categories, publisher_id, volume_id, recomended } =
+        request.body()
       const isExistBook = await Book.query().where('title', title).first()
       if (isExistBook && isExistBook.id != id)
         return response.status(400).json(BooksController.responseAlreadyExistTitle())
@@ -170,6 +242,7 @@ export default class BooksController {
           author_id,
           publisher_id,
           volume_id,
+          recomended: recomended ? true : false,
         })
         .save()
       const categoriesReq = Array()

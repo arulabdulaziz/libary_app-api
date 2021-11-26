@@ -1,5 +1,13 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate, belongsTo, BelongsTo, manyToMany,ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  column,
+  beforeCreate,
+  belongsTo,
+  BelongsTo,
+  manyToMany,
+  ManyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import { uuid } from 'uuidv4'
 import { compose } from '@ioc:Adonis/Core/Helpers'
 import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
@@ -19,6 +27,8 @@ export default class Book extends compose(BaseModel, SoftDeletes) {
   public title: string
   @column()
   public title_arr: string
+  @column()
+  public recomended: boolean
   @column()
   public author_id: string
   @column()

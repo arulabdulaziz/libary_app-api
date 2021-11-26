@@ -24,6 +24,11 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 Route.get('book', 'BooksController.index')
+Route.get('book_by_category', 'BooksController.getByCategory')
+Route.get('book_by_author', 'BooksController.getByAuthor')
+Route.get('book_by_publisher', 'BooksController.getByPublisher')
+Route.get('book_by_volume', 'BooksController.getByVolume')
+Route.get('book_recomended', 'BooksController.getByRecomended')
 Route.get('book/:id', 'BooksController.show')
 Route.get('author', 'AuthorsController.index')
 Route.get('author/:id', 'AuthorsController.show')
