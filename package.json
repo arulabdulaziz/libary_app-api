@@ -26,6 +26,7 @@
     "@adonisjs/auth": "^8.0.10",
     "@adonisjs/bouncer": "^2.2.5",
     "@adonisjs/core": "^5.4.0",
+    "@adonisjs/drive-s3": "^1.0.5",
     "@adonisjs/lucid": "^16.3.2",
     "@adonisjs/redis": "^7.0.9",
     "@adonisjs/repl": "^3.1.7",

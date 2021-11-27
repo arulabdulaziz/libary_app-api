@@ -7,11 +7,11 @@ import Book from 'App/Models/Book'
 
 export default class Volume extends compose(BaseModel, SoftDeletes) {
   public static selfAssignPrimaryKey = true
-  @column({ isPrimary: true })
+  @column({ isPrimary: true, prepare: (value: string) => (value ? value : uuid()) })
   public id: string
   @beforeCreate()
   public static assignUuid(volume: Volume) {
-    volume.id = uuid()
+    if (!volume.id) volume.id = uuid()
   }
   @column()
   public name: string

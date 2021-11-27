@@ -29,7 +29,8 @@
     "adonis-lucid-soft-deletes",
     "@adonisjs/auth",
     "@adonisjs/redis",
-    "@adonisjs/bouncer"
+    "@adonisjs/bouncer",
+    "@adonisjs/drive-s3"
   ],
   "aceProviders": [
     "@adonisjs/repl"
