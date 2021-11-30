@@ -1,0 +1,38 @@
+{
+  "typescript": true,
+  "namespaces": {
+    "httpControllers": "App/Controllers"
+  },
+  "commands": [
+    "./commands",
+    "@adonisjs/core/build/commands/index.js",
+    "@adonisjs/repl/build/commands",
+    "@adonisjs/lucid/build/commands",
+    "@adonisjs/bouncer/build/commands"
+  ],
+  "exceptionHandlerNamespace": "App/Exceptions/Handler",
+  "aliases": {
+    "App": "app",
+    "Config": "config",
+    "Database": "database",
+    "Contracts": "contracts"
+  },
+  "preloads": [
+    "./start/routes",
+    "./start/kernel",
+    "./start/bouncer"
+  ],
+  "providers": [
+    "./providers/AppProvider",
+    "@adonisjs/core",
+    "@adonisjs/lucid",
+    "adonis-lucid-soft-deletes",
+    "@adonisjs/auth",
+    "@adonisjs/redis",
+    "@adonisjs/bouncer",
+    "@adonisjs/drive-s3"
+  ],
+  "aceProviders": [
+    "@adonisjs/repl"
+  ]
+}
