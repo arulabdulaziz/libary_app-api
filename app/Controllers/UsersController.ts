@@ -21,7 +21,7 @@ export default class UsersController {
     })
     const { email, password } = request.body()
     const user = await User.query().where('email', email).whereNull('deleted_at').first()
-    if(!user){
+    if (!user) {
       return response
         .status(401)
         .json(Response.errorResponseSimple(false, { message: 'Email or Password Invalid' }))
@@ -35,11 +35,11 @@ export default class UsersController {
 
     // Generate token
     const token = await auth.use('api').generate(user)
-    const data = {...user.$original, token: token.token}
+    const data = { ...user.$original, token: token.token }
     return response.status(200).json(Response.successResponseSimple(true, data))
   }
   public async index({}: HttpContextContract) {
-    return {message: "index"}
+    return { message: 'index' }
   }
 
   public async create({}: HttpContextContract) {}

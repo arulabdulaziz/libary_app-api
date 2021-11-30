@@ -10,7 +10,7 @@ export default class Users extends BaseSchema {
       table.string('email')
       table.string('password')
       table.enum('role', ['admin', 'user']).defaultTo('user')
-      table.timestamp('deleted_at', { useTz: true })
+      table.timestamp('deleted_at', { useTz: true }).nullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

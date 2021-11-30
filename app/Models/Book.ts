@@ -21,7 +21,7 @@ export default class Book extends compose(BaseModel, SoftDeletes) {
   public id: string
   @beforeCreate()
   public static assignUuid(book: Book) {
-    book.id = uuid()
+    if (!book.id) book.id = uuid()
   }
   @column()
   public title: string
@@ -29,6 +29,10 @@ export default class Book extends compose(BaseModel, SoftDeletes) {
   public title_arr: string
   @column()
   public recomended: boolean
+  @column()
+  public count: number
+  @column()
+  public cover: string
   @column()
   public author_id: string
   @column()
